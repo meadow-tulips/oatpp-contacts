@@ -1,0 +1,7 @@
+BasedOnStyle: LLVM
+AlignConsecutiveDeclarations: true
+AllowShortFunctionsOnASingleLine: Empty
+AlwaysBreakTemplateDeclarations: true
+ColumnLimit: 80
+BreakBeforeBraces: Allman
+
