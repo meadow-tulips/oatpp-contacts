@@ -1,9 +1,28 @@
+#include "./components/app.h"
 #include <iostream>
+#include <oatpp/core/base/Environment.hpp>
+#include <oatpp/network/Server.hpp>
 
-int main()
-{
+void run() {
+  AppComponent components;
 
-  std::cout << "Hello World" << std::endl;
+  components.registerControllers();
 
+  oatpp::network::Server server(components.serverConnectionProvider.getObject(),
+                                components.serverConnectionHandler.getObject());
+
+  auto port = components.serverConnectionProvider.getObject()
+                  ->getProperty("port")
+                  .toString()
+                  ->c_str();
+  OATPP_LOGI("Server", "Server running on %s port", port);
+  server.run();
+}
+
+int main() {
+
+  oatpp::base::Environment::init();
+  run();
+  oatpp::base::Environment::destroy();
   return 0;
 };
