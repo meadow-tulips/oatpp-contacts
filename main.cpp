@@ -2,6 +2,7 @@
 #include <iostream>
 #include <oatpp/core/base/Environment.hpp>
 #include <oatpp/network/Server.hpp>
+#include <dotenv.h>
 
 void run() {
   AppComponent components;

@@ -9,6 +9,6 @@ add_subdirectory(/home/avan/Desktop/Libs/dotenv-cpp ${CMAKE_BINARY_DIR}/dot-env)
 add_subdirectory(/home/avan/Desktop/Libs/oatpp ${CMAKE_BINARY_DIR}/oatpp-build)
 add_subdirectory(/home/avan/Desktop/Libs/oatpp-postgresql ${CMAKE_BINARY_DIR}/oatpp-postgresql-build)
 
-add_executable(contacts main.cpp ./components/app.cpp)
+add_executable(contacts_binary main.cpp ./components/app.cpp)
 
-target_link_libraries(contacts dotenv oatpp oatpp-postgresql)
+target_link_libraries(contacts_binary dotenv oatpp oatpp-postgresql)
