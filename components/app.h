@@ -29,12 +29,10 @@ public:
         return _scp;
     }());
 
-
     OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::parser::json::mapping::ObjectMapper>, objectMapper)([] {
-            auto jsonMapper = oatpp::parser::json::mapping::ObjectMapper::createShared();
-            return jsonMapper;
-        }());
-
+                auto jsonMapper = oatpp::parser::json::mapping::ObjectMapper::createShared();
+                return jsonMapper;
+            }());
     void registerControllers();
 
 };
