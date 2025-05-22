@@ -40,9 +40,35 @@ ContactService::getAllContacts(int page, int size) {
 };
 
 oatpp::Object<GenericStreamLinedResponse<ContactDTO>>
-ContactService::createContact(const oatpp::Object<ContactDTO> &) {
+ContactService::createContact(const oatpp::Object<ContactDTO> &_contact) {
 
-  auto _res = GenericStreamLinedResponse<ContactDTO>::createShared();
+  auto res = GenericStreamLinedResponse<ContactDTO>::createShared();
 
-  return _res;
+  try {
+
+    auto dbResult = contactsDb->createContact(_contact);
+
+    if (!dbResult->isSuccess()) {
+
+      OATPP_LOGE("Database Error", "Query failed. Error: %s",
+                 dbResult->getErrorMessage()->c_str());
+      res->status = oatpp::web::protocol::http::Status::CODE_500.code;
+      res->message = dbResult->getErrorMessage();
+      res->data = nullptr;
+    } else {
+      // If successful, set success status and message
+      res->status = oatpp::web::protocol::http::Status::CODE_200.code;
+      res->message = "Success";
+      auto addedList =
+          dbResult->fetch<oatpp::List<oatpp::Object<ContactDTO>>>();
+      res->data = addedList[0];
+    }
+
+  } catch (const std::exception &e) {
+    OATPP_LOGE("Exception Found", "Query failed. Error: %s", e.what());
+    res->status = oatpp::web::protocol::http::Status::CODE_500.code;
+    res->message = "Unexpected error occurred";
+    res->data = nullptr;
+  }
+  return res;
 };

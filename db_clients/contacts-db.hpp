@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <oatpp-postgresql/orm.hpp>
 #include <oatpp/core/macro/codegen.hpp>
+#include "../dtos/contact-dto.hpp"
 
 #include OATPP_CODEGEN_BEGIN(DbClient)
 
@@ -31,6 +32,7 @@ public:
   QUERY(getAllContacts,
         "SELECT name, email, \"phoneNumbers\" FROM contacts LIMIT :limit OFFSET :offset", // select * from contacts
         PARAM(oatpp::UInt32, limit), PARAM(oatpp::UInt32, offset));
+  QUERY(createContact, "INSERT into contacts (name, email, \"phoneNumbers\") VALUES (:contact.name, :contact.email, :contact.phoneNumbers) RETURNING *", PARAM(oatpp::Object<ContactDTO>, contact));
 };
 
 #include OATPP_CODEGEN_END(DbClient)

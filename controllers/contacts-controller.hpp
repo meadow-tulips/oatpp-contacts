@@ -25,6 +25,10 @@ public:
     return createDtoResponse(Status::CODE_200, contactService.getAllContacts());
   };
 
+  ENDPOINT("POST", "/createContact", createContact, BODY_DTO(oatpp::Object<ContactDTO>, contactDTO)) {
+    return createDtoResponse(Status::CODE_200, contactService.createContact(contactDTO));
+  }
+
   static std::shared_ptr<ContactsController> createShared() {
     OATPP_COMPONENT(std::shared_ptr<oatpp::parser::json::mapping::ObjectMapper>,
                     objectMapper);
