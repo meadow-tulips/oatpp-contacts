@@ -72,3 +72,65 @@ ContactService::createContact(const oatpp::Object<ContactDTO> &_contact) {
   }
   return res;
 };
+
+oatpp::Object<GenericStreamLinedResponse<ContactDTO>>
+ContactService::updateContact(const oatpp::Object<ContactDTO> &_contact) {
+
+  auto res = GenericStreamLinedResponse<ContactDTO>::createShared();
+
+  try {
+
+    auto dbResult = contactsDb->updateContact(_contact);
+
+    if (!dbResult->isSuccess()) {
+
+      OATPP_LOGE("Database Error", "Query failed. Error: %s",
+                 dbResult->getErrorMessage()->c_str());
+      res->status = oatpp::web::protocol::http::Status::CODE_500.code;
+      res->message = dbResult->getErrorMessage();
+      res->data = nullptr;
+    } else {
+      // If successful, set success status and message
+      res->status = oatpp::web::protocol::http::Status::CODE_200.code;
+      res->message = "Success";
+      auto addedList =
+          dbResult->fetch<oatpp::List<oatpp::Object<ContactDTO>>>();
+      res->data = addedList[0];
+    }
+
+  } catch (const std::exception &e) {
+    OATPP_LOGE("Exception Found", "Query failed. Error: %s", e.what());
+    res->status = oatpp::web::protocol::http::Status::CODE_500.code;
+    res->message = "Unexpected error occurred";
+    res->data = nullptr;
+  }
+  return res;
+};
+
+oatpp::Object<PaginatedStreamLinedResponse<oatpp::Object<ContactDTO>>>
+ContactService::searchContact(const oatpp::Object<SearchInputDTO> & searchInputDTO) {
+  auto res =
+      PaginatedStreamLinedResponse<oatpp::Object<ContactDTO>>::createShared();
+  std::cout<<"InputStart-"<<static_cast<std::string>(searchInputDTO->name)<<"-Input"<<std::endl;
+  try {
+    auto dbResult = contactsDb->searchContact(searchInputDTO->name);
+
+    if(!dbResult->isSuccess()) {
+      res->status = oatpp::web::protocol::http::Status::CODE_500.code;
+      res->message = dbResult->getErrorMessage();
+    } else {
+
+      res->status =  oatpp::web::protocol::http::Status::CODE_200.code;
+      res->message = "Success";
+      res->data = dbResult->fetch<oatpp::List<oatpp::Object<ContactDTO>>>();
+    }
+
+  } catch (std::exception &e) {
+    OATPP_LOGE("Search Exception","%s", e.what());
+    res->message = "Unexpected error occurred";
+    res->data = {};
+    res->status = oatpp::web::protocol::http::Status::CODE_500.code;
+  }
+
+  return res;
+};

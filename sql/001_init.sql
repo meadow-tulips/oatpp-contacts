@@ -1,3 +1,4 @@
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
 CREATE TABLE IF NOT EXISTS Contacts (
     name                    varchar (256) PRIMARY KEY,
@@ -6,4 +7,4 @@ CREATE TABLE IF NOT EXISTS Contacts (
 );
 
 INSERT INTO Contacts
-(name, email, "phoneNumbers") VALUES ('Avan Sharma', 'admin@domain.com', Array['83299293']);
+(name, email, "phoneNumbers") VALUES ('Mike', 'admin@domain.com', Array['83299293']);

@@ -2,6 +2,7 @@
 #define CONTACTS_CONTROLLER_H
 
 #include "../dtos/contact-dto.hpp"
+#include "../dtos/search-dto.hpp"
 #include "../services/contact-service.hpp"
 #include <oatpp/core/Types.hpp>
 #include <oatpp/core/macro/codegen.hpp>
@@ -22,11 +23,30 @@ public:
       : oatpp::web::server::api::ApiController(objectMapper){};
 
   ENDPOINT("GET", "/contacts", getAllContacts) {
-    return createDtoResponse(Status::CODE_200, contactService.getAllContacts());
+    auto response = contactService.getAllContacts();
+    Status status(response->status, response->message->c_str());
+
+    return createDtoResponse(status, contactService.getAllContacts());
   };
 
-  ENDPOINT("POST", "/createContact", createContact, BODY_DTO(oatpp::Object<ContactDTO>, contactDTO)) {
-    return createDtoResponse(Status::CODE_200, contactService.createContact(contactDTO));
+  ENDPOINT("POST", "/createContact", createContact,
+           BODY_DTO(oatpp::Object<ContactDTO>, contactDTO)) {
+    auto response = contactService.createContact(contactDTO);
+    Status status(response->status, response->message->c_str());
+    return createDtoResponse(status, response);
+  }
+
+  ENDPOINT("PUT", "/updateContact", updateContact,
+           BODY_DTO(oatpp::Object<ContactDTO>, contactDTO)) {
+    auto response = contactService.updateContact(contactDTO);
+    Status status(response->status, response->message->c_str());
+    return createDtoResponse(status, response);
+  }
+
+  ENDPOINT("POST", "/searchContact", searchContact, BODY_DTO(oatpp::Object<SearchInputDTO>, searchInput)) {
+    auto response = contactService.searchContact(searchInput);
+    Status status(response->status, response->message->c_str());
+    return createDtoResponse(status, response);
   }
 
   static std::shared_ptr<ContactsController> createShared() {
