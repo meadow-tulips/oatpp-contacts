@@ -26,6 +26,9 @@ public:
   oatpp::Object<PaginatedStreamLinedResponse<oatpp::Object<ContactDTO>>>
   searchContact(const oatpp::Object<SearchInputDTO> &);
 
+  oatpp::Object<GenericStreamLinedResponse<ContactDTO>>
+  deleteContact(const oatpp::Object<SearchInputDTO> &);
+
 };
 
 #endif

@@ -26,7 +26,7 @@ public:
     auto response = contactService.getAllContacts();
     Status status(response->status, response->message->c_str());
 
-    return createDtoResponse(status, contactService.getAllContacts());
+    return createDtoResponse(status, response);
   };
 
   ENDPOINT("POST", "/createContact", createContact,
@@ -43,11 +43,20 @@ public:
     return createDtoResponse(status, response);
   }
 
-  ENDPOINT("POST", "/searchContact", searchContact, BODY_DTO(oatpp::Object<SearchInputDTO>, searchInput)) {
+  ENDPOINT("POST", "/searchContact", searchContact,
+           BODY_DTO(oatpp::Object<SearchInputDTO>, searchInput)) {
     auto response = contactService.searchContact(searchInput);
     Status status(response->status, response->message->c_str());
     return createDtoResponse(status, response);
   }
+
+  ENDPOINT("DELETE", "/deleteContact", deleteContact,
+           BODY_DTO(oatpp::Object<SearchInputDTO>, searchInput)) {
+    auto response = contactService.deleteContact(searchInput);
+    Status status(response->status, response->message->c_str());
+
+    return createDtoResponse(status, response);
+  };
 
   static std::shared_ptr<ContactsController> createShared() {
     OATPP_COMPONENT(std::shared_ptr<oatpp::parser::json::mapping::ObjectMapper>,

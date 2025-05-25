@@ -47,6 +47,9 @@ public:
         "SELECT * from contacts WHERE name % :name ORDER BY similarity(name, "
         ":name) DESC",
         PARAM(oatpp::String, name));
+
+  QUERY(deleteContact, "DELETE from contacts where LOWER(name) = LOWER(:name) RETURNING *",
+        PARAM(oatpp::String, name));
 };
 
 #include OATPP_CODEGEN_END(DbClient)

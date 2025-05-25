@@ -108,25 +108,27 @@ ContactService::updateContact(const oatpp::Object<ContactDTO> &_contact) {
 };
 
 oatpp::Object<PaginatedStreamLinedResponse<oatpp::Object<ContactDTO>>>
-ContactService::searchContact(const oatpp::Object<SearchInputDTO> & searchInputDTO) {
+ContactService::searchContact(
+    const oatpp::Object<SearchInputDTO> &searchInputDTO) {
   auto res =
       PaginatedStreamLinedResponse<oatpp::Object<ContactDTO>>::createShared();
-  std::cout<<"InputStart-"<<static_cast<std::string>(searchInputDTO->name)<<"-Input"<<std::endl;
+  std::cout << "InputStart-" << static_cast<std::string>(searchInputDTO->name)
+            << "-Input" << std::endl;
   try {
     auto dbResult = contactsDb->searchContact(searchInputDTO->name);
 
-    if(!dbResult->isSuccess()) {
+    if (!dbResult->isSuccess()) {
       res->status = oatpp::web::protocol::http::Status::CODE_500.code;
       res->message = dbResult->getErrorMessage();
     } else {
 
-      res->status =  oatpp::web::protocol::http::Status::CODE_200.code;
+      res->status = oatpp::web::protocol::http::Status::CODE_200.code;
       res->message = "Success";
       res->data = dbResult->fetch<oatpp::List<oatpp::Object<ContactDTO>>>();
     }
 
   } catch (std::exception &e) {
-    OATPP_LOGE("Search Exception","%s", e.what());
+    OATPP_LOGE("Search Exception", "%s", e.what());
     res->message = "Unexpected error occurred";
     res->data = {};
     res->status = oatpp::web::protocol::http::Status::CODE_500.code;
@@ -134,3 +136,35 @@ ContactService::searchContact(const oatpp::Object<SearchInputDTO> & searchInputD
 
   return res;
 };
+
+oatpp::Object<GenericStreamLinedResponse<ContactDTO>>
+ContactService::deleteContact(
+    const oatpp::Object<SearchInputDTO> &searchInputDTO) {
+
+  auto res = GenericStreamLinedResponse<ContactDTO>::createShared();
+  res->data = nullptr;
+
+  try {
+    auto dbResult = contactsDb->deleteContact(searchInputDTO->name);
+    if (!dbResult->isSuccess()) {
+      res->status = oatpp::web::protocol::http::Status::CODE_500.code;
+      res->message = dbResult->getErrorMessage();
+    } else {
+      auto deletedContactList =
+          dbResult->fetch<oatpp::List<oatpp::Object<ContactDTO>>>();
+      if (deletedContactList->size() > 0) {
+        res->status = oatpp::web::protocol::http::Status::CODE_200.code;
+        res->message = "Successfully deleted contact";
+      } else {
+        res->status = oatpp::web::protocol::http::Status::CODE_400.code;
+        res->message = "No contact found!";
+      }
+    }
+  } catch (std::exception &e) {
+
+    res->message = "Unexpected error occurred";
+    res->status = oatpp::web::protocol::http::Status::CODE_500.code;
+  }
+
+  return res;
+}
